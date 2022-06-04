@@ -6,13 +6,17 @@
 #include <string>
 
 #include "CSVReader.hpp"
+#include "WorkingPeriod.hpp"
+#include "EmployeeParser.hpp"
 
 int main()
 {
     std::ifstream file("employee_meeting_time.csv");
-    CSVReader row;
+    CSVReader reader;
+    EmployeeParser parser;
 
-    table CsvTable = row.readAll(file, true);
-    
+    table CsvTable = reader.readAll(file, true);
+    parser.parseEmployees(CsvTable);
+
     return 0;
 }
