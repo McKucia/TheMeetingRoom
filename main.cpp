@@ -16,7 +16,9 @@ int main()
     EmployeeParser parser;
 
     table CsvTable = reader.readAll(file, true);
-    parser.parseEmployees(CsvTable);
+    std::vector<Employee> employees = parser.parseEmployees(CsvTable);
+
+    std::cout << "Total number of employees: " << employees.size() << std::endl;
 
     return 0;
 }
