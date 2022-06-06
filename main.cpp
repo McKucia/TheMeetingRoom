@@ -34,6 +34,7 @@ struct Overlap
     WorkingPeriod overlapPeriod;
     float overlapTime;
     std::vector<std::string> names;
+    std::vector<std::string> allEmployees;
 };
 
 int main()
@@ -57,13 +58,17 @@ int main()
         }
     }
 
-    float totalOverlapTime = 0, totalTime = 0;
+    float totalOverlapTime = 0.0f, totalTime = 0.0f;
     std::vector<Overlap> overlaps;
     for(int i = 0; i < records.size(); i++)
     {
         totalTime += records[i].workingPeriod.getTime();
+
         for(int j = i + 1; j < records.size(); j++)
         {
+            std::string firstName = records[i].name;
+            std::string secondName = records[j].name;
+
             if(overlapped(records[i].workingPeriod, records[j].workingPeriod))
             {
                 float min = std::min(records[i].workingPeriod.finish, records[j].workingPeriod.finish);
@@ -90,9 +95,22 @@ int main()
                     std::vector<Overlap> tmpOverlaps;
                     for(int k = 0; k < allExistedOverlaps.size(); k++)
                     {
-                        allExistedOverlaps.at(k)->names.push_back(records[i].name);
-                        allExistedOverlaps.at(k)->names.push_back(records[j].name);
+                        allExistedOverlaps.at(k)->names.push_back(firstName);
+                        allExistedOverlaps.at(k)->names.push_back(secondName);
 
+                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), allExistedOverlaps.at(k)->allEmployees.end(), [firstName](std::string& e) { 
+                            return e == firstName;
+                        }))
+                        {
+                            allExistedOverlaps.at(k)->allEmployees.push_back(firstName);
+                        }
+                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), allExistedOverlaps.at(k)->allEmployees.end(), [secondName](std::string& e) { 
+                            return e == secondName;
+                        }))
+                        {
+                            allExistedOverlaps.at(k)->allEmployees.push_back(secondName);
+                        }
+                        
                         if(k + 1 < allExistedOverlaps.size())
                         {
                             const float secondStart = allExistedOverlaps.at(k + 1)->overlapPeriod.start;
@@ -101,28 +119,78 @@ int main()
                             if(secondStart != firstfinish)
                             {
                                 WorkingPeriod  betweenOverlap(firstfinish, secondStart);
-                                Overlap overlap(records[i].name, records[j].name, betweenOverlap, secondStart - firstfinish);
+                                Overlap overlap(firstName, secondName, betweenOverlap, secondStart - firstfinish);
+
+                                if(!std::any_of(overlap.allEmployees.begin(), overlap.allEmployees.end(), [firstName](std::string& e) { 
+                                    return e == firstName;
+                                }))
+                                {
+                                    overlap.allEmployees.push_back(firstName);
+                                };
+
+                                if(!std::any_of(overlap.allEmployees.begin(), overlap.allEmployees.end(), [secondName](std::string& e) { 
+                                    return e == secondName;
+                                }))
+                                {
+                                    overlap.allEmployees.push_back(secondName);
+                                };
+
                                 tmpOverlaps.push_back(overlap);
                                 // totalOverlapTime += secondStart - firstfinish;
                             }
                         }
                     }
-
-                    overlaps.insert(overlaps.end(), tmpOverlaps.begin(), tmpOverlaps.end());
-                    totalOverlapTime += overlapTime;
+                    
+                    for(Overlap tmpO : tmpOverlaps)
+                    {
+                        bool found = std::any_of(overlaps.begin(), overlaps.end(), [tmpO](Overlap& o) { 
+                            return (o.overlapPeriod.start == tmpO.overlapPeriod.start &&
+                                    o.overlapPeriod.finish == tmpO.overlapPeriod.finish);
+                        });
+                        if(!found && tmpO.overlapPeriod.start < tmpO.overlapPeriod.finish)
+                        {
+                            overlaps.push_back(tmpO);
+                        }
+                    }
+                
                 }
                 else
                 {
-                    Overlap overlap(records[i].name, records[j].name, overlapPeriod, overlapTime);
+                    Overlap overlap(firstName, secondName, overlapPeriod, overlapTime);
+
+                    overlap.allEmployees.push_back(firstName);
+                    overlap.allEmployees.push_back(secondName);
+
                     overlaps.push_back(overlap);
-                    totalOverlapTime += overlapTime;
                 }
                  
             }
         }
     }
 
+    std::cout << std::endl;
+    for(Overlap o : overlaps)
+    {
+        totalOverlapTime += (o.allEmployees.size() - 1) * o.overlapTime;
+        std::cout << "From " << o.overlapPeriod.start << " to " << o.overlapPeriod.finish << " - " << o.allEmployees.size() << " employees" << std::endl;
+        for(std::string name : o.allEmployees)
+        {
+            std::cout << name << std::endl;
+        }
+    }
+    std::cout << std::endl;
+
     std::cout << "The total use time of the room: " << totalTime - totalOverlapTime << std::endl;
+
+    Overlap maxOverlap("", "", WorkingPeriod(0.0f, 0.0f), 0.0f);
+    for(Overlap o : overlaps)
+    {
+        if(o.overlapTime > maxOverlap.overlapTime)
+            maxOverlap = o;
+    }
+
+    std::cout << std::endl;
+    std::cout << "The time frame in which there have been more employees: " << maxOverlap.overlapPeriod.start << " " << maxOverlap.overlapPeriod.finish << std::endl;
 
     return 0;
 }

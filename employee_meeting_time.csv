@@ -2,5 +2,13 @@ employee,start,end
 name.lastname1,8:30,9:30
 name.lastname1,10:00,11:00
 name.lastname1,12:00,12:30
-name.lastname2,8:30,10:30
-name.lastname3,8:30,10:30
+name.lastname2,8:30,9:30
+name.lastname2,11:30,12:00
+name.lastname2,13:00,13:30
+name.lastname3,8:30,9:30
+name.lastname3,12:00,12:30
+name.lastname3,13:00,13:30
+name.lastname4,7:00,10:00
+name.lastname4,10:00,11:00
+name.lastname5,8:30,10:30
+name.lastname5,13:00,15:30
