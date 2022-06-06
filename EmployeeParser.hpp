@@ -45,10 +45,16 @@ private:
     WorkingPeriod parseHours(const std::vector<std::string>& row)
     {
         std::string start = row[1], finish = row[2];
-        start.replace(start.find(":"), 1, ".");
-        finish.replace(finish.find(":"), 1, ".");
+        
+        float startMinutes = std::stof(start.substr(start.length() - 2)) / 60;
+        float startHour = std::stof(start.substr(0, start.find(":")));
+        float startParsed = startHour + startMinutes;
 
-        WorkingPeriod workingPeriod{ std::stof(start), std::stof(finish) };
+        float finishMinutes = std::stof(finish.substr(finish.length() - 2)) / 60;
+        float finishHour = std::stof(finish.substr(0, finish.find(":")));
+        float finishParsed = finishHour + finishMinutes;
+
+        WorkingPeriod workingPeriod{ startParsed, finishParsed };
         return workingPeriod;
     }
 };
