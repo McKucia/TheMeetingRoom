@@ -6,36 +6,12 @@
 #include <string>
 
 #include "CSVReader.hpp"
-#include "WorkingPeriod.hpp"
+#include "Structures.hpp"
 #include "EmployeeParser.hpp"
 
 bool overlapped(const WorkingPeriod& w1, const WorkingPeriod& w2){
     return std::max(w1.start, w2.start) < std::min(w1.finish, w2.finish);
 }
-
-struct Record
-{
-    Record(std::string _name, WorkingPeriod _workingPeriod) :
-        name(_name), workingPeriod(_workingPeriod) {}
-
-    WorkingPeriod workingPeriod;
-    std::string name;
-};
-
-struct Overlap
-{
-    Overlap(std::string _name1,  std::string _name2, WorkingPeriod _overlapPeriod, float _overlapTime) :
-        overlapPeriod(_overlapPeriod), overlapTime(_overlapTime) 
-    {
-        names.push_back(_name1);
-        names.push_back(_name2);
-    }
-
-    WorkingPeriod overlapPeriod;
-    float overlapTime;
-    std::vector<std::string> names;
-    std::vector<std::string> allEmployees;
-};
 
 int main()
 {
@@ -98,13 +74,17 @@ int main()
                         allExistedOverlaps.at(k)->names.push_back(firstName);
                         allExistedOverlaps.at(k)->names.push_back(secondName);
 
-                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), allExistedOverlaps.at(k)->allEmployees.end(), [firstName](std::string& e) { 
+                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), 
+                            allExistedOverlaps.at(k)->allEmployees.end(), 
+                            [firstName](std::string& e) { 
                             return e == firstName;
                         }))
                         {
                             allExistedOverlaps.at(k)->allEmployees.push_back(firstName);
                         }
-                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), allExistedOverlaps.at(k)->allEmployees.end(), [secondName](std::string& e) { 
+                        if(!std::any_of(allExistedOverlaps.at(k)->allEmployees.begin(), 
+                            allExistedOverlaps.at(k)->allEmployees.end(),
+                            [secondName](std::string& e) { 
                             return e == secondName;
                         }))
                         {
@@ -136,7 +116,6 @@ int main()
                                 };
 
                                 tmpOverlaps.push_back(overlap);
-                                // totalOverlapTime += secondStart - firstfinish;
                             }
                         }
                     }

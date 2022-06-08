@@ -1,7 +1,9 @@
+#pragma once
+
 #include <string>
 #include <vector>
 
-#include "WorkingPeriod.hpp"
+#include "Structures.hpp"
 #include "Employee.hpp"
 
 class EmployeeParser

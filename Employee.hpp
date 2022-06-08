@@ -3,7 +3,7 @@
 #include <string>
 #include <vector>
 
-#include "WorkingPeriod.hpp"
+#include "Structures.hpp"
 
 class Employee 
 {
